@@ -16,11 +16,18 @@ app.use(express.json());
 app.use(express.static(path.join(__dirname, "public")));
 
 // Note variables
-        // GET api/notes route
+    // GET api/notes route
     app.get("/api/notes", function(req, res) {
-        res.json(notes)
+        try {
+            notesData = fs.readFileSync("db/db.json", "utf8");
+            notesData = JSON.parse(notesData);
+        } 
+        catch (err) {
+            console.log(err);
+        }
+        res.json(notesData);
     });
-        // POST api/notes route
+    // POST api/notes route
     app.post("/api/notes", function(req, res) {
         try {
             notesData = fs.readFileSync("db/db.json", "utf8");
@@ -28,9 +35,11 @@ app.use(express.static(path.join(__dirname, "public")));
             req.body.id = notesData.length;
             notesData.push(req.body);
             notesData = JSON.stringify(notesData);
+            // Writes the new note to file
             fs.writeFile("db/db.json", notesData, "utf8", function(err) {
                 if (err) throw err;
             });
+            res.json(JSON.parse(notesData));
         }
         catch (err) {
             throw err;
@@ -40,15 +49,15 @@ app.use(express.static(path.join(__dirname, "public")));
     
     // Delete the note with selected id
     app.delete("/api/notes/:id", function(req, res) {
-        try
-        {
-        notesData = fs.readFileSync("db/db.json", "utf8");
-        notesData = JSON.parse(notesData);
-        notesData = notesData.filter(function(note) {
-            return note.id != req.pararms.id
+        try {
+            notesData = fs.readFileSync("db/db.json", "utf8");
+            notesData = JSON.parse(notesData);
+            notesData = notesData.filter(function(note) {
+                return note.id != req.params.id
         });
-        res.send(JSON.parse(notesData));
-        } catch (err) {
+            
+        } 
+        catch (err) {
             throw err;
             console.log(err);
         }
