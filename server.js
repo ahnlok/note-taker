@@ -64,7 +64,7 @@ app.use(express.static(path.join(__dirname, "public")));
         // Handling error
         }
         catch (err) {
-            throwerr;
+            throw err;
             console.log(err);
         }
     });
