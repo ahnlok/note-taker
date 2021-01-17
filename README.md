@@ -19,7 +19,8 @@
 # Usage
 ### Here is the guidline gif and link for this project
 ![usage](notetaker.gif)
-#### Link: https://drive.google.com/file/d/1wWztadPx-QI5rYZ6-bc8LEJ2hXvfDN79/view
+#### Link: <https://drive.google.com/file/d/1wWztadPx-QI5rYZ6-bc8LEJ2hXvfDN79/view>
+#### Deployed Heroku: <https://infinite-inlet-33096.herokuapp.com/>
 ---
 
 # URL
