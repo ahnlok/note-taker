@@ -55,10 +55,16 @@ app.use(express.static(path.join(__dirname, "public")));
             notesData = notesData.filter(function(note) {
                 return note.id != req.params.id
         });
-            
-        } 
+        notesData = JSON.stringify(notesData);
+        
+        fs.writeFile("db/db.json", notesData, "utf8", function(err) {
+            if(err) throw err;
+        });
+        res.send(JSON.stringify(notesData));
+        // Handling error
+        }
         catch (err) {
-            throw err;
+            throwerr;
             console.log(err);
         }
     });
