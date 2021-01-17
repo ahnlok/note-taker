@@ -7,7 +7,7 @@ module.exports = function(app) {
     fs.readFile("db/db.json", "utf8", function (err, data) {
         if (err) throw err;
 
-        const notes = JSON.parse(data);
+        var notes = JSON.parse(data);
         // GET api/notes route
         app.get("/api/notes", function(req, res) {
             res.json(notes)
@@ -41,5 +41,11 @@ module.exports = function(app) {
         });
 
         // Update the json file when a note is added or deleted by the users
+        function updateDb() {
+            fs.writeFile("db/db.json", JSON.stringify(notes, '\t'), err => {
+                if (err) throw err;
+                return true;
+            });
         }
+    });
 }
