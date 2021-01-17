@@ -6,7 +6,9 @@ const path = require("path");
 // Tells node that we are creating an "express" server
 const app = express ();
 // Initial PORT
-const PORT = process.env.PORT || 3000;
+const PORT = process.env.PORT || 8080;
+
+let notesData = [];
 
 // Express app to handle data parsing
 app.use(express.urlencoded({ extended: true }));
@@ -14,34 +16,47 @@ app.use(express.json());
 app.use(express.static(path.join(__dirname, "public")));
 
 // Note variables
-fs.readFile("db/db.json", "utf8", function (err, data) {
-    if (err) throw err;
-
-    var notes = JSON.parse(data);
         // GET api/notes route
     app.get("/api/notes", function(req, res) {
         res.json(notes)
     });
         // POST api/notes route
     app.post("/api/notes", function(req, res) {
-        const newNote = req.body;
-        notes.push(newNote);
-        updateDb();
-        return console.log("Added new note: "+newNote.title);
+        try {
+            notesData = fs.readFileSync("db/db.json", "utf8");
+            notesData = JSON.parse(notesData);
+            req.body.id = notesData.length;
+            notesData.push(req.body);
+            notesData = JSON.stringify(notesData);
+            fs.writeFile("db/db.json", notesData, "utf8", function(err) {
+                if (err) throw err;
+            });
+        }
+        catch (err) {
+            throw err;
+            console.log(err);
+        }
     });
-        // Retrieving a note with id
-    app.get("/api/notes/:id", function(req, res) {
-        res.json(notes[req.params.id]);
-    });
-        // Delete the note with selected id
+    
+    // Delete the note with selected id
     app.delete("/api/notes/:id", function(req, res) {
-        notes.splice(req.params.id, 1);
-        updateDb();
-        console.log("Deleted note with id "+req.params.id);
+        try
+        {
+        notesData = fs.readFileSync("db/db.json", "utf8");
+        notesData = JSON.parse(notesData);
+        notesData = notesData.filter(function(note) {
+            return note.id != req.pararms.id
+        });
+        res.send(JSON.parse(notesData));
+        } catch (err) {
+            throw err;
+            console.log(err);
+        }
     });
+   
 
-        // Routes
-        // notes.html route when /notes is typed
+    // Routes
+    // notes.html route when /notes is typed
     app.get("/notes", function(req, res) {
         res.sendFile(path.join(__dirname, "./public/notes.html"));
     });
@@ -50,15 +65,12 @@ fs.readFile("db/db.json", "utf8", function (err, data) {
         res.sendFile(path.join(__dirname, "./public/index.html"));
     });
 
-        // Update the json file when a note is added or deleted by the users
-    function updateDb() {
-        fs.writeFile("db/db.json", JSON.stringify(notes, '\t'), err => {
-            if (err) throw err;
-            return true;
-        });
-    }
-});
+    app.get("/api/notes", function(req, res) {
+        return res.sendFile(path.json(__dirname, "db/db.json"));
+    });
 
+
+ 
 // LISTENER
 app.listen(PORT, function() {
     console.log("App listening on PORT: " + PORT);
