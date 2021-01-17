@@ -28,6 +28,18 @@ module.exports = function(app) {
             notes.splice(req.params.id, 1);
             updateDb();
             console.log("Deleted note with id "+req.params.id);
-        }
+        });
+
+        // Routes
+        // notes.html route when /notes is typed
+        app.get("/notes", function(req, res) {
+            res.sendFile(path.join(__dirname, "../public/notes.html"));
+        });
+        // index.html when all others have been accessed
+        app.get("*", function(req, res) {
+            res.sendFile(path.join(__dirname, "../public/index.html"));
+        });
+
+        // Update the json file when a note is added or deleted by the users
         }
 }
